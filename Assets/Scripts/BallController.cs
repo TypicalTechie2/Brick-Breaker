@@ -22,6 +22,11 @@ public class BallController : MonoBehaviour
     {
         rb.velocity = rb.velocity.normalized * initialSpeed;
         LaunchBall();
+
+        if (transform.position.y < -3.6)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
