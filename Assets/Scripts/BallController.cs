@@ -15,7 +15,7 @@ public class BallController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         rb.velocity = rb.velocity.normalized * initialSpeed;
     }
@@ -33,6 +33,11 @@ public class BallController : MonoBehaviour
         {
             Vector3 reflection = Vector3.Reflect(rb.velocity, collision.contacts[0].normal);
             rb.velocity = reflection;
+        }
+
+        else if (collision.gameObject.CompareTag("Brick"))
+        {
+            Destroy(collision.gameObject);
         }
     }
 
