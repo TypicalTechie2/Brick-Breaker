@@ -9,6 +9,9 @@ public class BallController : MonoBehaviour
     public bool launched = false;
     private Transform paddle;
     private GameManager gameManager;
+    private AudioSource ballAudio;
+    public AudioClip brickCrashSound;
+    public AudioClip paddleSound;
     public int pointValueOnDestroy;
 
     // Start is called before the first frame update
@@ -18,6 +21,7 @@ public class BallController : MonoBehaviour
         paddle = GameObject.Find("Paddle").transform;
         transform.SetParent(paddle);
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        ballAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -33,18 +37,23 @@ public class BallController : MonoBehaviour
             float hitPoint = collision.contacts[0].point.x - collision.transform.position.x;
             Vector3 direction = new Vector3(hitPoint, 1f, 0f).normalized;
             rb.velocity = direction * initialSpeed;
+            ballAudio.PlayOneShot(paddleSound, 1.0f);
         }
 
-        else if (collision.gameObject.CompareTag("Wall"))
-        {
-            Vector3 reflection = Vector3.Reflect(rb.velocity, collision.contacts[0].normal);
-            rb.velocity = reflection;
-        }
+        // else if (collision.gameObject.CompareTag("Wall"))
+        //{
+        //Vector3 reflection = Vector3.Reflect(rb.velocity, collision.contacts[0].normal);
+        //rb.velocity = reflection;
+        // }
 
         else if (collision.gameObject.CompareTag("Brick"))
         {
             Destroy(collision.gameObject);
             gameManager.UpdateScore(pointValueOnDestroy);
+            ballAudio.PlayOneShot(brickCrashSound, 1.0f);
+            gameManager.BrickDestroyed();
+            //gameManager.isGameActive = false;
+            //Destroy(gameObject);
         }
 
         else if (collision.gameObject.CompareTag("Sensor"))
