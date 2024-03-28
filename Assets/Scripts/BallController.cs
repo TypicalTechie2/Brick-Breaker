@@ -6,8 +6,10 @@ public class BallController : MonoBehaviour
 {
     private Rigidbody rb;
     [SerializeField] private float initialSpeed = 10f;
-    private bool launched = false;
+    public bool launched = false;
     private Transform paddle;
+    private GameManager gameManager;
+    public int pointValueOnDestroy;
 
     // Start is called before the first frame update
     void Start()
@@ -15,18 +17,13 @@ public class BallController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         paddle = GameObject.Find("Paddle").transform;
         transform.SetParent(paddle);
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        rb.velocity = rb.velocity.normalized * initialSpeed;
         LaunchBall();
-
-        if (transform.position.y < -3.6)
-        {
-            Destroy(gameObject);
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -47,17 +44,24 @@ public class BallController : MonoBehaviour
         else if (collision.gameObject.CompareTag("Brick"))
         {
             Destroy(collision.gameObject);
+            gameManager.UpdateScore(pointValueOnDestroy);
+        }
+
+        else if (collision.gameObject.CompareTag("Sensor"))
+        {
+            Destroy(gameObject);
+            gameManager.GameOver();
         }
     }
 
-    private void LaunchBall()
+    public void LaunchBall()
     {
+        rb.velocity = rb.velocity.normalized * initialSpeed;
         if (Input.GetKeyDown(KeyCode.Space) && !launched)
         {
             rb.velocity = Vector3.up * initialSpeed;
             transform.SetParent(null);
             launched = true;
         }
-
     }
 }
