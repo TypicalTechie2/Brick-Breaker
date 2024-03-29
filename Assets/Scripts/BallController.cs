@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BallController : MonoBehaviour
 {
@@ -10,8 +11,8 @@ public class BallController : MonoBehaviour
     private Transform paddle;
     private GameManager gameManager;
     private AudioSource ballAudio;
-    public AudioClip brickCrashSound;
-    public AudioClip paddleSound;
+    [SerializeField] private AudioClip brickCrashSound;
+    [SerializeField] AudioClip paddleSound;
     public int pointValueOnDestroy;
 
     // Start is called before the first frame update
@@ -52,8 +53,6 @@ public class BallController : MonoBehaviour
             gameManager.UpdateScore(pointValueOnDestroy);
             ballAudio.PlayOneShot(brickCrashSound, 1.0f);
             gameManager.BrickDestroyed();
-            //gameManager.isGameActive = false;
-            //Destroy(gameObject);
         }
 
         else if (collision.gameObject.CompareTag("Sensor"))
@@ -66,6 +65,7 @@ public class BallController : MonoBehaviour
     public void LaunchBall()
     {
         rb.velocity = rb.velocity.normalized * initialSpeed;
+
         if (Input.GetKeyDown(KeyCode.Space) && !launched)
         {
             rb.velocity = Vector3.up * initialSpeed;

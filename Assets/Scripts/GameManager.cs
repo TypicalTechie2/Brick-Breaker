@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,10 +12,12 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI gameOverText;
     public TextMeshProUGUI congratsText;
-    [SerializeField] private GameObject brickPrefab;
+    public GameObject brickPrefab;
     private AudioSource audioSource;
     public AudioClip backgroundMusic;
     public GameObject congratsParticlePrefab;
+    [SerializeField] Button restartButton;
+    [SerializeField] Button ExitToMenuButton;
     private int rows = 5;
     private int columns = 5;
     private float brickWidth = 3f;
@@ -27,23 +32,7 @@ public class GameManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         ballScript = GameObject.Find("Ball").GetComponent<BallController>();
         StartGame();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public void StartGame()
-    {
-        isGameActive = true;
-        ballScript.launched = false;
-        score = 0;
-        UpdateScore(score);
-        audioSource.clip = backgroundMusic;
-        audioSource.Play();
-        SpawnBricks();
+        Debug.Log("Game Started");
     }
 
     void SpawnBricks()
@@ -58,13 +47,23 @@ public class GameManager : MonoBehaviour
                 Instantiate(brickPrefab, position, Quaternion.identity, transform);
             }
         }
-
     }
-
     public void UpdateScore(int scoreToAdd)
     {
         score += scoreToAdd;
+        //scoreText.text = "Score: " + score;
+        UpdateScoreUI();
+    }
+
+    private void UpdateScoreUI()
+    {
         scoreText.text = "Score: " + score;
+    }
+
+    public void ResetGame()
+    {
+        score = 0;
+        UpdateScoreUI();
     }
 
     public void BrickDestroyed()
@@ -79,12 +78,30 @@ public class GameManager : MonoBehaviour
             isGameActive = false;
         }
     }
-
-
     public void GameOver()
     {
         isGameActive = false;
         gameOverText.gameObject.SetActive(true);
         audioSource.Stop();
+    }
+    public void StartGame()
+    {
+        isGameActive = true;
+        score = 0;
+        SpawnBricks();
+        UpdateScore(score);
+        audioSource.clip = backgroundMusic;
+        audioSource.Play();
+    }
+
+    public void RestartGame()
+    {
+        ResetGame();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void ExitToMenu()
+    {
+        SceneManager.LoadScene("Main Menu");
     }
 }
